@@ -20,6 +20,8 @@ Poczytałem trochę co będzie potrzebne, kupiłem niekompletna stacje Sainlogic
 * ilość opadów,
 * pomiar napięcia baterii,
 
+![aplikacja](/images/aplikacja.png)
+
 ## Części:
 * niekompletna stacja Sainlogic WS3500 - bez tabletu i zasilacza -> nie można jej skonfigurować, ale nieuszkodzona, wyrwana za 100zł :D
 * ESP32 DevKit
