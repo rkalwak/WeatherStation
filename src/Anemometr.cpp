@@ -39,14 +39,11 @@ namespace Supla
       }
     }
 
-    Anemometr::Anemometr(int pinAnem, double wind_factory, int selectedMode) : lastReadTime(0) // constructor
+    Anemometr::Anemometr(int pinAnem, double wind_factory, int selectedMode) : lastReadTime(0), // constructor
+      GeneralPurposeMeasurement(nullptr, false)
     {
-
-      channel.setType(SUPLA_CHANNELTYPE_WINDSENSOR);
-      channel.setDefault(SUPLA_CHANNELFNC_WINDSENSOR);
-      channel.setNewValue(WIND_NOT_AVAILABLE);
-
-      _pinAnem = pinAnem;
+      setDefaultUnitAfterValue("km/h");
+       _pinAnem = pinAnem;
       _wind_factory = wind_factory;
       _currentWindCount = 0;
       _currentWindSpeed = 0.0;
@@ -73,7 +70,7 @@ namespace Supla
         delay(_sampleTime * 1000);
         _currentWindSpeed = ((float)_currentWindCount / _sampleTime) * _wind_factory;
       }
-      return _currentWindSpeed;
+      return _currentWindSpeed*3.6; //km/h
     };
 
     void Anemometr::iterateAlways()

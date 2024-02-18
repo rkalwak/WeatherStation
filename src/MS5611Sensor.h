@@ -22,16 +22,16 @@ Copyright (C) krycha88
 
 #include <MS5611.h>
 #include <Wire.h>
-#include <supla/sensor/pressure.h>
+#include <supla/sensor/general_purpose_measurement.h>
 
 namespace Supla
 {
   namespace Sensor
   {
-    class MS5611Sensor : public Supla::Sensor::Pressure
+    class MS5611Sensor : public GeneralPurposeMeasurement
     {
     public:
-      MS5611Sensor(int altitude)
+      MS5611Sensor(int altitude): GeneralPurposeMeasurement(nullptr, false)
       {
         this->altitude = altitude;
       }

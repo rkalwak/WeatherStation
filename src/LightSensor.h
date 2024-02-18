@@ -1,18 +1,16 @@
-#include <supla/channel_element.h>
 #include "Adafruit_LTR390.h"
+#include <supla/sensor/general_purpose_measurement.h>
 namespace Supla
 {
     namespace Sensor
     {
 
-        class LightSensor : public ChannelElement
+        class LightSensor : public GeneralPurposeMeasurement
         {
         public:
-            LightSensor() : lastReadTime(0)
+            LightSensor() : lastReadTime(0), GeneralPurposeMeasurement(nullptr, false)
             {
-                channel.setType(SUPLA_CHANNELTYPE_THERMOMETER);
-                channel.setDefault(SUPLA_CHANNELFNC_THERMOMETER);
-                channel.setNewValue(0.0);
+                setDefaultUnitAfterValue("lx");
             };
 
             void onInit()

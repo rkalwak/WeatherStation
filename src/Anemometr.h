@@ -2,7 +2,7 @@
 #define _Anemometr_h
 
 #include "supla/channel.h"
-#include "supla/element.h"
+#include <supla/sensor/general_purpose_measurement.h>
 
 #define WIND_NOT_AVAILABLE -1
 #define SAMPLETIME 5.0
@@ -11,7 +11,7 @@ namespace Supla
 {
 	namespace Sensor
 	{
-		class Anemometr : public Element
+		class Anemometr : public GeneralPurposeMeasurement
 		{
 		public:
 			Anemometr(int pinAnem, double wind_factory, int selectedMode);

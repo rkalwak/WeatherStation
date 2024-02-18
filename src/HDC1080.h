@@ -22,64 +22,80 @@ Copyright (C) krycha88
 
 #include <ClosedCube_HDC1080.h>
 #include <Wire.h>
-#include <supla/sensor/therm_hygro_meter.h>
+#include "supla/channel.h"
+#include "supla/element.h"
+#include <supla/sensor/general_purpose_measurement.h>
 
-namespace Supla {
-namespace Sensor {
-class HDC1080 : public ThermHygroMeter {
- public:
-  HDC1080() {
-  }
+namespace Supla
+{
+  namespace Sensor
+  {
+    class HDC1080 : public GeneralPurposeMeasurement
+    {
+    public:
+      HDC1080() : GeneralPurposeMeasurement(nullptr, false)
+      {
+        setDefaultUnitAfterValue("%");
+      }
 
-  double getTemp() {
-    float value = TEMPERATURE_NOT_AVAILABLE;
-    value = hdc1080.readTemperature();
+      double getTemp()
+      {
+        float value = TEMPERATURE_NOT_AVAILABLE;
+        value = hdc1080.readTemperature();
 
-    if (isnan(value)) {
-      value = TEMPERATURE_NOT_AVAILABLE;
-    }
+        if (isnan(value))
+        {
+          value = TEMPERATURE_NOT_AVAILABLE;
+        }
 
-    return value;
-  }
+        return value;
+      }
 
-  double getHumi() {
-    float value = HUMIDITY_NOT_AVAILABLE;
-    value = hdc1080.readHumidity();
+      double getHumi()
+      {
+        float value = HUMIDITY_NOT_AVAILABLE;
+        value = hdc1080.readHumidity();
 
-    if (isnan(value)) {
-      value = HUMIDITY_NOT_AVAILABLE;
-    }
+        if (isnan(value))
+        {
+          value = HUMIDITY_NOT_AVAILABLE;
+        }
 
-    return value;
-  }
+        return value;
+      }
 
-  void onInit() {
-    hdc1080.begin(0x40);
+      void onInit() override
+      {
+        hdc1080.begin(0x40);
 
-    Serial.print("Manufacturer ID=0x");
-    Serial.println(hdc1080.readManufacturerId(),
-                   HEX);  // 0x5449 ID of Texas Instruments
-    Serial.print("Device ID=0x");
-    Serial.println(hdc1080.readDeviceId(), HEX);  // 0x1050 ID of the device
+        Serial.print("Manufacturer ID=0x");
+        Serial.println(hdc1080.readManufacturerId(),
+                       HEX); // 0x5449 ID of Texas Instruments
+        Serial.print("Device ID=0x");
+        Serial.println(hdc1080.readDeviceId(), HEX); // 0x1050 ID of the device
 
-    Serial.print("Device Serial Number=");
-    HDC1080_SerialNumber sernum = hdc1080.readSerialNumber();
-    char format[15];
-    sprintf(format,
-            "%02X-%04X-%04X",
-            sernum.serialFirst,
-            sernum.serialMid,
-            sernum.serialLast);
-    Serial.println(format);
+        Serial.print("Device Serial Number=");
+        HDC1080_SerialNumber sernum = hdc1080.readSerialNumber();
+        char format[15];
+        sprintf(format,
+                "%02X-%04X-%04X",
+                sernum.serialFirst,
+                sernum.serialMid,
+                sernum.serialLast);
+        Serial.println(format);
 
-    channel.setNewValue(getTemp(), getHumi());
-  }
+        channel.setNewValue(getHumi());
+      }
 
- protected:
-  ::ClosedCube_HDC1080 hdc1080;  // I2C
-};
+    protected:
+      ::ClosedCube_HDC1080 hdc1080; // I2C
+      unsigned long lastSendTime;
+      double getValue() override{
+        return getHumi();
+      }
+    };
 
-};  // namespace Sensor
-};  // namespace Supla
+  }; // namespace Sensor
+};   // namespace Supla
 
 #endif

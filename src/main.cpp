@@ -78,18 +78,18 @@ void setup()
 
   Serial.begin(115200);
   // Replace the falowing GUID with value that you can retrieve from https://www.supla.org/arduino/get-guid
-  char GUID[SUPLA_GUID_SIZE] = {0x59, 0x37, 0xA9, 0x23, 0x69, 0x7E, 0x90, 0xD3, 0x48, 0x2A, 0x30, 0xC7, 0xA7, 0x96, 0xAF, 0x46};
+  char GUID[SUPLA_GUID_SIZE] = {0x8E,0xD9,0xE0,0x4D,0xAF,0x3D,0x86,0x82,0xCB,0xD7,0xF0,0x24,0x3F,0xFA,0x56,0x63};
 
   // Replace the following AUTHKEY with value that you can retrieve from: https://www.supla.org/arduino/get-authkey
-  char AUTHKEY[SUPLA_AUTHKEY_SIZE] = {0xF9, 0x39, 0x9D, 0x7E, 0x4E, 0xE6, 0x6B, 0x92, 0x1E, 0x18, 0xBD, 0x9A, 0x39, 0xB2, 0xB2, 0x0E};
+  char AUTHKEY[SUPLA_AUTHKEY_SIZE] = {0x3C,0xC9,0x60,0x2A,0x03,0xEB,0x1B,0xD1,0x36,0x85,0x20,0xF6,0xD2,0x2F,0x9A,0xE6};
   new Supla::Sensor::DS18B20(4);
   new Supla::Sensor::HDC1080();
-  rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
-  new Supla::Sensor::LightSensor();
-  new Supla::Sensor::MS5611Sensor(248);
-  new Supla::Sensor::Anemometr(15, 1, 1);
-  new Supla::Sensor::WindDirectionSensor(18,-45);
-  new Supla::Sensor::VoltageMeasurement(34);
+  //rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
+  //new Supla::Sensor::LightSensor();
+  //new Supla::Sensor::MS5611Sensor(248);
+  //new Supla::Sensor::Anemometr(15, 1, 1);
+  //new Supla::Sensor::WindDirectionSensor(18,-45);
+  //new Supla::Sensor::VoltageMeasurement(34);
   Wire.setClock(100000);
 
   SuplaDevice.begin(GUID,           // Global Unique Identifier
@@ -105,7 +105,7 @@ void loop()
   // reset counter every hour as rain is counter hourly
   if(suplaClock.getMin() == 0 && resetOncePerHour)
   {
-    rainSensor->setReset(true);
+    //rainSensor->setReset(true);
     resetOncePerHour=false;
   }
   if(suplaClock.getMin() == 1 )
