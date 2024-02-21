@@ -1,4 +1,3 @@
-
 #include <supla/sensor/rain.h>
 namespace Supla
 {
@@ -45,7 +44,7 @@ namespace Supla
                 attachInterrupt(digitalPinToInterrupt(_pinRain), rain_detect, FALLING);
                 channel.setNewValue(getValue());
             }
-            double getValue()
+            double getValue() override
             {
                 return _currentRainCount * _bucketSize;
             }

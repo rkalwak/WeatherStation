@@ -10,7 +10,7 @@ namespace Supla
         public:
             LightSensor() : lastReadTime(0), GeneralPurposeMeasurement(nullptr, false)
             {
-                setDefaultUnitAfterValue("lx");
+                setDefaultUnitAfterValue("lx");                
             };
 
             void onInit()
@@ -23,7 +23,7 @@ namespace Supla
                 ltr.configInterrupt(true, LTR390_MODE_ALS);
                 ltr.setMode(LTR390_MODE_ALS);
             }
-            double getValue()
+            double getValue() override
             {
                 /*
                 if (ltr.newDataAvailable())
@@ -34,14 +34,6 @@ namespace Supla
                 }
                 */
                 return ltr.readALS();
-            }
-            void iterateAlways()
-            {
-                if (lastReadTime + 10000 < millis())
-                {
-                    lastReadTime = millis();
-                    channel.setNewValue(getValue());
-                }
             }
 
         protected:

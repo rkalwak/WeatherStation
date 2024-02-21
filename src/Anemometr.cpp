@@ -73,17 +73,6 @@ namespace Supla
       return _currentWindSpeed*3.6; //km/h
     };
 
-    void Anemometr::iterateAlways()
-    {
-      if (lastReadTime + 10000 < millis())
-      {
-        lastReadTime = millis();
-        channel.setNewValue(getValue());
-        Serial.print("Speed: ");
-        Serial.println(getValue());
-      }
-    }
-
     float Anemometr::get_wind_gust()
     {
       unsigned long latestTime;

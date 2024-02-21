@@ -14,12 +14,23 @@
 #include <supla/clock/clock.h>
 #include <Anemometr.h>
 #include <WindDirection.h>
+#include <supla/storage/littlefs_config.h>
+#include <supla/network/esp_web_server.h>
+#include <supla/network/html/device_info.h>
+#include <supla/network/html/wifi_parameters.h>
+#include <supla/network/html/protocol_parameters.h>
 Supla::Clock suplaClock;
 Supla::Sensor::RainSensor* rainSensor;
 bool resetOncePerHour=true;
-#define ESP32
 
-Supla::ESPWifi wifi(wifiSSID, wifiPass);
+//Supla::ESPWifi wifi(wifiSSID, wifiPass);
+Supla::ESPWifi wifi;
+Supla::LittleFsConfig configSupla;
+Supla::EspWebServer suplaServer;
+Supla::Html::DeviceInfo htmlDeviceInfo(&SuplaDevice);
+Supla::Html::WifiParameters htmlWifi;
+Supla::Html::ProtocolParameters htmlProto;
+
 namespace Supla
 {
   namespace Sensor
@@ -77,39 +88,20 @@ void setup()
 {
 
   Serial.begin(115200);
-  // Replace the falowing GUID with value that you can retrieve from https://www.supla.org/arduino/get-guid
-  char GUID[SUPLA_GUID_SIZE] = {0x8E,0xD9,0xE0,0x4D,0xAF,0x3D,0x86,0x82,0xCB,0xD7,0xF0,0x24,0x3F,0xFA,0x56,0x63};
 
-  // Replace the following AUTHKEY with value that you can retrieve from: https://www.supla.org/arduino/get-authkey
-  char AUTHKEY[SUPLA_AUTHKEY_SIZE] = {0x3C,0xC9,0x60,0x2A,0x03,0xEB,0x1B,0xD1,0x36,0x85,0x20,0xF6,0xD2,0x2F,0x9A,0xE6};
   new Supla::Sensor::DS18B20(4);
   new Supla::Sensor::HDC1080();
-  //rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
-  //new Supla::Sensor::LightSensor();
-  //new Supla::Sensor::MS5611Sensor(248);
-  //new Supla::Sensor::Anemometr(15, 1, 1);
-  //new Supla::Sensor::WindDirectionSensor(18,-45);
+  rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
+  new Supla::Sensor::LightSensor();
+  new Supla::Sensor::MS5611Sensor(248);
+  new Supla::Sensor::Anemometr(15, 1, 1);
+  new Supla::Sensor::WindDirectionSensor(18,0);
   //new Supla::Sensor::VoltageMeasurement(34);
   Wire.setClock(100000);
-
-  SuplaDevice.begin(GUID,           // Global Unique Identifier
-                    serverVariable, // SUPLA server address
-                    emailVariable,  // Email address used to login to Supla Cloud
-                    AUTHKEY);
-  SuplaDevice.addClock(new Supla::Clock); 
+ SuplaDevice.begin();
 }
 
 void loop()
 {
   SuplaDevice.iterate();
-  // reset counter every hour as rain is counter hourly
-  if(suplaClock.getMin() == 0 && resetOncePerHour)
-  {
-    //rainSensor->setReset(true);
-    resetOncePerHour=false;
-  }
-  if(suplaClock.getMin() == 1 )
-  {
-    resetOncePerHour=true;
-  }
 }

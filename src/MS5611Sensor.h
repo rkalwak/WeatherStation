@@ -34,9 +34,10 @@ namespace Supla
       MS5611Sensor(int altitude): GeneralPurposeMeasurement(nullptr, false)
       {
         this->altitude = altitude;
+        setDefaultUnitAfterValue("hPa");
       }
 
-      double getValue()
+      double getValue() override
       {
         Serial.println(F("MS5611 getting pres."));
         float value = -123;
@@ -68,8 +69,6 @@ namespace Supla
         {
           Serial.println("MS5611 not found.");
         }
-
-        channel.setNewValue(getValue(), -1.0);
       }
 
     protected:

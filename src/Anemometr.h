@@ -21,16 +21,10 @@ namespace Supla
 			static unsigned long _shortestWindTime;
 			static long _currentWindCount;
 			friend void serviceInterruptAnem();
-			virtual double getValue();
-			void iterateAlways();
+			double getValue() override;
 			void onInit();
 
 		protected:
-			Channel *getChannel()
-			{
-				return &channel;
-			}
-			Channel channel;
 
 			unsigned long lastReadTime;
 			double _wind_factory;
