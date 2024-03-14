@@ -23,14 +23,12 @@ Supla::Clock suplaClock;
 Supla::Sensor::RainSensor* rainSensor;
 bool resetOncePerHour=true;
 
-//Supla::ESPWifi wifi(wifiSSID, wifiPass);
 Supla::ESPWifi wifi;
 Supla::LittleFsConfig configSupla;
 Supla::EspWebServer suplaServer;
 Supla::Html::DeviceInfo htmlDeviceInfo(&SuplaDevice);
 Supla::Html::WifiParameters htmlWifi;
 Supla::Html::ProtocolParameters htmlProto;
-
 namespace Supla
 {
   namespace Sensor
@@ -95,13 +93,24 @@ void setup()
   new Supla::Sensor::LightSensor();
   new Supla::Sensor::MS5611Sensor(248);
   new Supla::Sensor::Anemometr(15, 1, 1);
-  new Supla::Sensor::WindDirectionSensor(18,0);
+  new Supla::Sensor::WindDirectionSensor(18,15);
   //new Supla::Sensor::VoltageMeasurement(34);
   Wire.setClock(100000);
+
  SuplaDevice.begin();
 }
 
 void loop()
 {
   SuplaDevice.iterate();
+  // reset counter every hour as rain is counter hourly
+  if(suplaClock.getMin() == 0 && resetOncePerHour)
+  {
+    rainSensor->setReset(true);
+    resetOncePerHour=false;
+  }
+  if(suplaClock.getMin() == 1 )
+  {
+    resetOncePerHour=true;
+  }
 }
