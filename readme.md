@@ -1,14 +1,6 @@
 # Stacja pogodowa
 
-Z Arduino i zaraz potem ESP32 bawię się już ponad dwa lata. W sumie to zacząłem bardziej z [NanoFramework](https://www.nanoframework.net) i tam portowałem kilka bibliotek, bo C++ to jest dla mnie epoka kamienia łupanego :P Padł pomysł, żeby zrobić sobie pogodynkę na bazie ESP32 zaprogramowaną w C# przez NanoFramework. 
-
-W miedzyczasie poznałem Suplę i zacząłem od rolet na SRW-01 a potem na zaprogramowaniu ESP przez GUI-Generic i się zaczęło... 
-
-Doszedłem do momentu że dopisałem sobie "Kanał ogólnego przeznaczenia", umiem to zbudować ale ze względu na absolutny brak dokumentacji nie umiem tego uruchomić w Dokerze i się poddałem... 
-
-Chciałem też napisać komunikację z Supla w C# ale z braku czasu odpuściłem.  Prędzej czy później to zrobię... 
-
-Poczytałem trochę co będzie potrzebne, kupiłem niekompletna stacje Sainlogic WS3500 na A****** i tak powstało to cudo, które niedlugo zawiśnie na płocie :D
+Poczytałem trochę co będzie potrzebne, kupiłem niekompletna stacje Sainlogic WS3500 na A****** i tak powstało to cudo :D
 
 ![stacja](/images/stacja.png)
 
@@ -18,7 +10,11 @@ Poczytałem trochę co będzie potrzebne, kupiłem niekompletna stacje Sainlogic
 * ciśnienie atmosferyczne,
 * siła i kierunek wiatru,
 * ilość opadów,
-* pomiar napięcia baterii,
+* pył PM_0.5
+* pył PM_1.0
+* pył PM_2.5
+* pył PM_4.0
+* pył PM_10.0
 
 ![aplikacja](/images/aplikacja.png)
 
@@ -35,14 +31,14 @@ Poczytałem trochę co będzie potrzebne, kupiłem niekompletna stacje Sainlogic
 * lx-lifc1-n - Moduł BMS z ładowarką do akumulatorów Li-ion 2S z USB typu C i obsługą QC, możliwość ładowania z USB albo panelu.
 * przetwornica step-down
 * panel fotowoltaiczny dający 7V i ok. 1W wbudowany w stację
-
+* Sensirion SPS30 - czujnik pyłu zawieszonego
 
 ## Schemat i sposób działania
 ![fritzing](/images/fritzing.png)
 
 ESP32 jest wyciągniete do zewnętrznej puszki wraz z zasilaniem, ze względu na rozmiar stacji, po prostu się w niej nie mieści. Użyłem 12 żyłowego, 2 metrowego przewodu telefonicznego do połaczenia płytki w stacji z tą w puszce.
 
-Wykorzystałem panel fotowoltaiczny z kupionej stacji do ładowania akumulatorków, jednak jest za słaby aby w pełni naładować 2 akumulatorki i co najwyżej wydłuża czas pracy na bateriach, który bez panelu wynosi ponad dobę pracy non stop.
+Wykorzystałem panel fotowoltaiczny z kupionej stacji do ładowania akumulatorków, jednak jest za słaby aby w pełni naładować 2 akumulatorki i co najwyżej wydłuża czas pracy na bateriach, który bez panelu wynosi ponad dobę pracy non stop. Ostatecznie stacja jest podłączona do zasilacza 12V w garażu.
 
 ## Problemy
 
@@ -70,6 +66,8 @@ Trzecia opcja: zasilanie z USB - nie mam póki co dobrego miejsca, żeby stacja 
 
 Czwarta opcja: czytałem, że ESP32 DevKit może przyjąć do 12V na VIN pin, podłączył bym bezpośrednio baterie, ale jakoś się nie odważyłem jeszcze, ktoś próbował?
 
+Stanęło na zasilaczu 12V.
+
 ### Dokładność pomiarów
 
 ADC w ESP32 jest trochę słabe, pomiar napięcia akumulatorków jest "mniej więcej", wahania rzędu 0.3V.
@@ -80,14 +78,8 @@ Siła wiatru zdecydowanie będzie lepiej oprogramowana bo nie znając możliwoś
 
 ### Supla i jej możliwości
 
-Niestety Supla nie ma jeszcze generycznego kanału, któremu można przypisać jednostkę lub kanału stacji pogodowej przewidującego więcej parametrów więc niektóre pomiary musiały zostać przepchnięte przez kanał temperatury, np. napięcie akumulatorków czy kierunek wiatru jako kąt z zakresu 0-360 względem północy.
+Niektóre pomiary musiały zostać przepchnięte przez kanał temperatury, np. kierunek wiatru jako kąt z zakresu 0-360 względem północy.
 
 ## Plany na przyszłość
 
-- Pewnie większy panel fotowoltaiczny.
-- Pomiar napięcia z panelu.
-- Pomiar poboru prądu przez ESP - mam już moduł INA219 obczajony :D
-- Własne płytki zamiast breakout boardów, a przynajmniej ta zewnętrzna.
-- Pomiar zanieczyszczenia powietrza (SDS0111).
-- Po przekroczeniu ustawionej godziny przechodzić na tryb "deep_sleep" i budzić co 15 min na minutę aby pomiar wiatru i deszczu był choć trochę użyteczny. Następnie rano o ustalonej godzinie budzić się aby pracować do wieczora w celu wydłużenia pracy na akumulatorkach.
-- Albo w Supli pojawi się kanał ogólnego przeznaczenia, który będzie wspieral dane, które mogę wysłać albo zgłosze PR ze zmianami :D
+- brak

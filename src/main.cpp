@@ -14,36 +14,41 @@
 #include <supla/clock/clock.h>
 #include <Anemometr.h>
 #include <WindDirection.h>
+#include <SPS30Sensor.h>
+#include <supla/storage/littlefs_config.h>
+#include <supla/network/esp_web_server.h>
+#include <supla/network/html/device_info.h>
+#include <supla/network/html/wifi_parameters.h>
+#include <supla/network/html/protocol_parameters.h>
 Supla::Clock suplaClock;
-Supla::Sensor::RainSensor* rainSensor;
-bool resetOncePerHour=true;
-#define ESP32
+Supla::Sensor::RainSensor *rainSensor;
+bool resetOncePerHour = true;
 
 Supla::ESPWifi wifi(wifiSSID, wifiPass);
 namespace Supla
 {
   namespace Sensor
   {
-class VoltageMeasurement : public Element
-        {
-        public:
-            VoltageMeasurement(int pinDirection);
+    class VoltageMeasurement : public Element
+    {
+    public:
+      VoltageMeasurement(int pinDirection);
 
-            void iterateAlways();
-            void onInit();
+      void iterateAlways();
+      void onInit();
 
-        protected:
-            Channel *getChannel()
-            {
-                return &channel;
-            }
-            Channel channel;
-            unsigned long lastSendTime;
-            int _pinInput;
-        };
+    protected:
+      Channel *getChannel()
+      {
+        return &channel;
+      }
+      Channel channel;
+      unsigned long lastSendTime;
+      int _pinInput;
+    };
     VoltageMeasurement::VoltageMeasurement(int pin) : lastSendTime(0) // constructor
     {
-      _pinInput=pin;
+      _pinInput = pin;
       pinMode(_pinInput, INPUT);
       analogSetPinAttenuation(_pinInput, ADC_11db);
       channel.setType(SUPLA_CHANNELTYPE_THERMOMETER);
@@ -57,12 +62,12 @@ class VoltageMeasurement : public Element
       if (lastSendTime + 10000 < millis())
       {
         lastSendTime = millis();
-        int mv=analogReadMilliVolts(_pinInput);
+        int mv = analogReadMilliVolts(_pinInput);
         Serial.print("Analog read of voltage:");
         Serial.println(mv);
-        //2.686 - 8.4
-        // read - x
-        channel.setNewValue(mv*8400/2686/1000.0);
+        // 2.686 - 8.4
+        //  read - x
+        channel.setNewValue(mv * 8400 / 2686 / 1000.0);
       }
     }
 
@@ -72,7 +77,7 @@ class VoltageMeasurement : public Element
     }
 
   }; // namespace Sensor
-};   // namespace Supla
+}; // namespace Supla
 void setup()
 {
 
@@ -88,8 +93,14 @@ void setup()
   new Supla::Sensor::LightSensor();
   new Supla::Sensor::MS5611Sensor(248);
   new Supla::Sensor::Anemometr(15, 1, 1);
-  new Supla::Sensor::WindDirectionSensor(18,-45);
-  new Supla::Sensor::VoltageMeasurement(34);
+  new Supla::Sensor::WindDirectionSensor(18, 15);
+  Supla::Sensor::SPS30_X *sps30 = new Supla::Sensor::SPS30_X();
+  auto spsPM005 = new Supla::Sensor::SPS30_PM005(sps30);
+  auto spsPM01 = new Supla::Sensor::SPS30_PM01(sps30);
+  auto spsPM025 = new Supla::Sensor::SPS30_PM025(sps30);
+  auto spsPM04 = new Supla::Sensor::SPS30_PM04(sps30);
+  auto spsPM10 = new Supla::Sensor::SPS30_PM10(sps30);
+  // new Supla::Sensor::VoltageMeasurement(34);
   Wire.setClock(100000);
 
   SuplaDevice.begin(GUID,           // Global Unique Identifier
@@ -103,13 +114,13 @@ void loop()
 {
   SuplaDevice.iterate();
   // reset counter every hour as rain is counter hourly
-  if(suplaClock.getMin() == 0 && resetOncePerHour)
+  if (suplaClock.getMin() == 0 && resetOncePerHour)
   {
     rainSensor->setReset(true);
-    resetOncePerHour=false;
+    resetOncePerHour = false;
   }
-  if(suplaClock.getMin() == 1 )
+  if (suplaClock.getMin() == 1)
   {
-    resetOncePerHour=true;
+    resetOncePerHour = true;
   }
 }
