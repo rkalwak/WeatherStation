@@ -111,6 +111,7 @@ namespace Supla
         sps30 = sensor;
         this->setInitialCaption("PM 0.5");
         this->setDefaultUnitAfterValue("μg/m³");
+        this->setRefreshIntervalMs(60000);
       }
 
       double getValue()
@@ -137,6 +138,7 @@ namespace Supla
 
         this->setDefaultUnitAfterValue("μg/m³");
         this->setInitialCaption("PM 1.0");
+        this->setRefreshIntervalMs(60000);
       }
 
       double getValue()
@@ -163,6 +165,7 @@ namespace Supla
 
         this->setDefaultUnitAfterValue("μg/m³");
         this->setInitialCaption("PM 2.5");
+        this->setRefreshIntervalMs(60000);
       }
 
       double getValue()
@@ -189,6 +192,7 @@ namespace Supla
 
         this->setDefaultUnitAfterValue("μg/m³");
         this->setInitialCaption("PM 4.0");
+        this->setRefreshIntervalMs(60000);
       }
 
       double getValue()
@@ -215,6 +219,7 @@ namespace Supla
 
         this->setDefaultUnitAfterValue("μg/m³");
         this->setInitialCaption("PM 10.0");
+        this->setRefreshIntervalMs(60000);
       }
 
       double getValue()

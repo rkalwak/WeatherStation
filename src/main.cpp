@@ -15,69 +15,20 @@
 #include <Anemometr.h>
 #include <WindDirection.h>
 #include <SPS30Sensor.h>
+#include <VoltageSensor.h>
 #include <supla/storage/littlefs_config.h>
 #include <supla/network/esp_web_server.h>
 #include <supla/network/html/device_info.h>
 #include <supla/network/html/wifi_parameters.h>
 #include <supla/network/html/protocol_parameters.h>
+#include <supla/device/supla_ca_cert.h>
 Supla::Clock suplaClock;
 Supla::Sensor::RainSensor *rainSensor;
 bool resetOncePerHour = true;
 
 Supla::ESPWifi wifi(wifiSSID, wifiPass);
-namespace Supla
-{
-  namespace Sensor
-  {
-    class VoltageMeasurement : public Element
-    {
-    public:
-      VoltageMeasurement(int pinDirection);
+Supla::LittleFsConfig configSupla;
 
-      void iterateAlways();
-      void onInit();
-
-    protected:
-      Channel *getChannel()
-      {
-        return &channel;
-      }
-      Channel channel;
-      unsigned long lastSendTime;
-      int _pinInput;
-    };
-    VoltageMeasurement::VoltageMeasurement(int pin) : lastSendTime(0) // constructor
-    {
-      _pinInput = pin;
-      pinMode(_pinInput, INPUT);
-      analogSetPinAttenuation(_pinInput, ADC_11db);
-      channel.setType(SUPLA_CHANNELTYPE_THERMOMETER);
-      channel.setDefault(SUPLA_CHANNELFNC_THERMOMETER);
-      channel.setNewValue(0);
-    };
-
-    void VoltageMeasurement::iterateAlways()
-    {
-
-      if (lastSendTime + 10000 < millis())
-      {
-        lastSendTime = millis();
-        int mv = analogReadMilliVolts(_pinInput);
-        Serial.print("Analog read of voltage:");
-        Serial.println(mv);
-        // 2.686 - 8.4
-        //  read - x
-        channel.setNewValue(mv * 8400 / 2686 / 1000.0);
-      }
-    }
-
-    void VoltageMeasurement::onInit()
-    {
-      channel.setNewValue(0);
-    }
-
-  }; // namespace Sensor
-}; // namespace Supla
 void setup()
 {
 
@@ -103,11 +54,41 @@ void setup()
   // new Supla::Sensor::VoltageMeasurement(34);
   Wire.setClock(100000);
 
+
+  Supla::Storage::Init();
+
+  auto cfg = Supla::Storage::ConfigInstance();
+
+  if (cfg)
+  {
+    char buf[100];
+    if (!cfg->getGUID(buf))
+    {
+      Serial.println("[Main] setting config.");
+      cfg->setGUID(GUID);
+      cfg->setAuthKey(AUTHKEY);
+      cfg->setWiFiSSID(wifiSSID);
+      cfg->setWiFiPassword(wifiPass);
+      cfg->setSuplaServer(serverVariable);
+      cfg->setEmail(emailVariable);
+    }
+    else
+    {
+      Serial.println("[Main] Can load guid.");
+    }
+  }
+  else
+  {
+    Serial.println("[Main] Config not found.");
+  }
+  
+  SuplaDevice.setSuplaCACert(suplaCACert);
+  SuplaDevice.setSupla3rdPartyCACert(supla3rdCACert);
   SuplaDevice.begin(GUID,           // Global Unique Identifier
                     serverVariable, // SUPLA server address
                     emailVariable,  // Email address used to login to Supla Cloud
                     AUTHKEY);
-  SuplaDevice.addClock(new Supla::Clock); 
+  SuplaDevice.addClock(new Supla::Clock);
 }
 
 void loop()
