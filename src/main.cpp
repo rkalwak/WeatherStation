@@ -72,13 +72,17 @@ void setup()
   auto spsPM025 = new Supla::Sensor::SPS30_PM025(sps30);
   auto spsPM04 = new Supla::Sensor::SPS30_PM04(sps30);
   auto spsPM10 = new Supla::Sensor::SPS30_PM10(sps30);
+  
   new Supla::Sensor::DS18B20(4);
-  new Supla::Sensor::HDC1080();
-  rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
+  new Supla::Sensor::HDC1080();  
   new Supla::Sensor::MS5611Sensor(248);
-  new Supla::Sensor::Anemometr(15, 1, 1);
+  rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
   new Supla::Sensor::WindDirectionSensor(18, 15);
+
+  new Supla::Sensor::Anemometr(15, 1, 1);
+
   // new Supla::Sensor::VoltageMeasurement(34);
+  
   Wire.setClock(100000);
   
   SuplaDevice.setSuplaCACert(suplaCACert);

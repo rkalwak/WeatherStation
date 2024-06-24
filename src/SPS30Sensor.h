@@ -58,7 +58,7 @@ namespace Supla
         }
       }
 
-      void onInit()
+      void onInit() override
       {
         lastReadTime = millis();
         Serial.println(F("Turning ON SPS sensor"));
