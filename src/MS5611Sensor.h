@@ -56,7 +56,7 @@ namespace Supla
         return value;
       }
 
-      void onInit()
+      void onInit() override
       {
         Serial.println(F("MS5611 init."));
         ms5611 = MS5611(0x77);

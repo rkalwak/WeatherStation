@@ -53,7 +53,7 @@ class HDC1080 : public ThermHygroMeter {
     return value;
   }
 
-  void onInit() {
+  void onInit() override{
     hdc1080.begin(0x40);
 
     Serial.print("Manufacturer ID=0x");

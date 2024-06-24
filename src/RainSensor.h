@@ -39,7 +39,7 @@ namespace Supla
                 debounceTimeGlobal = debounceTime;
             };
 
-            void onInit()
+            void onInit() override
             {
                 // pinMode(_pinRain, INPUT_PULLUP);
                 attachInterrupt(digitalPinToInterrupt(_pinRain), rain_detect, FALLING);

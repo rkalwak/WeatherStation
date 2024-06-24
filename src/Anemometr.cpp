@@ -78,7 +78,7 @@ namespace Supla
 
     void Anemometr::iterateAlways()
     {
-      if (lastReadTime + 10000 < millis())
+      if (millis()- lastReadTime > 10000 )
       {
         lastReadTime = millis();
         channel.setNewValue(getValue());

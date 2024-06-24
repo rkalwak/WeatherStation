@@ -31,12 +31,12 @@ namespace Supla
 
     void WindDirectionSensor::iterateAlways()
     {
-      if (lastReadTime + 1000 < millis())
+      if ( millis() -lastReadTime > 1000 )
       {
         lastReadTime = millis();
         averageAngle.add(as5600.rawAngle() * AS5600_RAW_TO_DEGREES+_angleAdjustmentToNorth);
       }
-      if (lastSendTime + 10000 < millis())
+      if (millis() -lastSendTime > 10000)
       {
         lastSendTime = millis();
         channel.setNewValue(averageAngle.getAverage());

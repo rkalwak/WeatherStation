@@ -38,24 +38,8 @@ void setup()
 
   // Replace the following AUTHKEY with value that you can retrieve from: https://www.supla.org/arduino/get-authkey
   char AUTHKEY[SUPLA_AUTHKEY_SIZE] = {0xF9, 0x39, 0x9D, 0x7E, 0x4E, 0xE6, 0x6B, 0x92, 0x1E, 0x18, 0xBD, 0x9A, 0x39, 0xB2, 0xB2, 0x0E};
-  new Supla::Sensor::DS18B20(4);
-  new Supla::Sensor::HDC1080();
-  rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
-  new Supla::Sensor::LightSensor();
-  new Supla::Sensor::MS5611Sensor(248);
-  new Supla::Sensor::Anemometr(15, 1, 1);
-  new Supla::Sensor::WindDirectionSensor(18, 15);
-  Supla::Sensor::SPS30_X *sps30 = new Supla::Sensor::SPS30_X();
-  auto spsPM005 = new Supla::Sensor::SPS30_PM005(sps30);
-  auto spsPM01 = new Supla::Sensor::SPS30_PM01(sps30);
-  auto spsPM025 = new Supla::Sensor::SPS30_PM025(sps30);
-  auto spsPM04 = new Supla::Sensor::SPS30_PM04(sps30);
-  auto spsPM10 = new Supla::Sensor::SPS30_PM10(sps30);
-  // new Supla::Sensor::VoltageMeasurement(34);
-  Wire.setClock(100000);
-
-
-  Supla::Storage::Init();
+ 
+ Supla::Storage::Init();
 
   auto cfg = Supla::Storage::ConfigInstance();
 
@@ -81,13 +65,25 @@ void setup()
   {
     Serial.println("[Main] Config not found.");
   }
+  new Supla::Sensor::LightSensor();
+  Supla::Sensor::SPS30_X *sps30 = new Supla::Sensor::SPS30_X();
+  auto spsPM005 = new Supla::Sensor::SPS30_PM005(sps30);
+  auto spsPM01 = new Supla::Sensor::SPS30_PM01(sps30);
+  auto spsPM025 = new Supla::Sensor::SPS30_PM025(sps30);
+  auto spsPM04 = new Supla::Sensor::SPS30_PM04(sps30);
+  auto spsPM10 = new Supla::Sensor::SPS30_PM10(sps30);
+  new Supla::Sensor::DS18B20(4);
+  new Supla::Sensor::HDC1080();
+  rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
+  new Supla::Sensor::MS5611Sensor(248);
+  new Supla::Sensor::Anemometr(15, 1, 1);
+  new Supla::Sensor::WindDirectionSensor(18, 15);
+  // new Supla::Sensor::VoltageMeasurement(34);
+  Wire.setClock(100000);
   
   SuplaDevice.setSuplaCACert(suplaCACert);
   SuplaDevice.setSupla3rdPartyCACert(supla3rdCACert);
-  SuplaDevice.begin(GUID,           // Global Unique Identifier
-                    serverVariable, // SUPLA server address
-                    emailVariable,  // Email address used to login to Supla Cloud
-                    AUTHKEY);
+  SuplaDevice.begin();
   SuplaDevice.addClock(new Supla::Clock);
 }
 
