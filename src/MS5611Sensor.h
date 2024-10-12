@@ -39,7 +39,9 @@ namespace Supla
       double getValue()
       {
         Serial.println(F("MS5611 getting pres."));
+
         float value = -123;
+#ifdef normalMode
         int result = ms5611.read();
         if (result != MS5611_READ_OK)
         {
@@ -53,12 +55,14 @@ namespace Supla
           float multiplier = 0.0065;
           value = pow(((multiplier * altitude) / (temp + 273.15) + 1), 5.255) * value;
         }
+#endif
         return value;
       }
 
       void onInit() override
       {
         Serial.println(F("MS5611 init."));
+#ifdef normalMode
         ms5611 = MS5611(0x77);
         if (ms5611.begin() == true)
         {
@@ -68,7 +72,7 @@ namespace Supla
         {
           Serial.println("MS5611 not found.");
         }
-
+#endif
         channel.setNewValue(getValue(), -1.0);
       }
 
@@ -78,6 +82,6 @@ namespace Supla
     };
 
   }; // namespace Sensor
-};   // namespace Supla
+}; // namespace Supla
 
 #endif

@@ -42,7 +42,9 @@ namespace Supla
             void onInit() override
             {
                 // pinMode(_pinRain, INPUT_PULLUP);
+                #ifdef normalMode
                 attachInterrupt(digitalPinToInterrupt(_pinRain), rain_detect, FALLING);
+                #endif
                 channel.setNewValue(getValue());
             }
             double getValue()

@@ -36,32 +36,43 @@ namespace Supla
 
       void iterateAlways()
       {
+
         if (millis() - lastReadTime > 60000)
         { // 1min
           lastReadTime = millis();
-          do
-          {
-            ret = sps30_read_data_ready(&data_ready);
-            if (ret < 0)
-            {
-              Serial.print("error reading data-ready flag: ");
-              Serial.println(ret);
-            }
-            else if (!data_ready)
-              Serial.print("data not ready, no new measurement available\n");
-            else
-              break;
-            delay(100); /* retry in 100ms */
-          } while (1);
+#ifdef normalMode
 
-          ret = sps30_read_measurement(&m);
+          {
+            do
+            {
+
+              ret = sps30_read_data_ready(&data_ready);
+              if (ret < 0)
+              {
+                Serial.print("error reading data-ready flag: ");
+                Serial.println(ret);
+              }
+              else if (!data_ready)
+                Serial.print("data not ready, no new measurement available\n");
+              else
+                break;
+              delay(100);
+            } while (1);
+
+            ret = sps30_read_measurement(&m);
+          }
+          
+#endif
         }
       }
 
       void onInit() override
       {
+
         lastReadTime = millis();
         Serial.println(F("Turning ON SPS sensor"));
+#ifdef normalMode
+
         sensirion_i2c_init();
         while (sps30_probe() != 0)
         {
@@ -84,7 +95,10 @@ namespace Supla
 
 #ifndef PLOTTER_FORMAT
         Serial.print("measurements started\n");
-#endif /* PLOTTER_FORMAT */
+        
+#endif
+
+#endif
       }
 
       sps30_measurement getMeasurement()

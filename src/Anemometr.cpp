@@ -21,6 +21,7 @@ namespace Supla
   {
 
     unsigned long lastWindTime;
+    unsigned long stopSampling = 0;
     long Anemometr::_currentWindCount = 0;
     unsigned long Anemometr::_shortestWindTime = 0;
 
@@ -60,7 +61,9 @@ namespace Supla
 
     double Anemometr::getValue() // in milliseconds
     {
-
+#ifdef normalMode
+      _currentWindSpeed = get_current_wind_speed_when_sampling();
+      /*
       if (!_selectedMode)
       {
         _currentWindSpeed = get_current_wind_speed_when_sampling();
@@ -70,15 +73,23 @@ namespace Supla
 
         startWindSample(SAMPLETIME);
         _currentWindCount = 0;
+        if(stopSampling > _sampleTime * 1000)
+        {
+          _currentWindSpeed = ((float)_currentWindCount / _sampleTime) * _wind_factory;
+        }
         delay(_sampleTime * 1000);
-        _currentWindSpeed = ((float)_currentWindCount / _sampleTime) * _wind_factory;
+
       }
+      */
       return _currentWindSpeed;
+#else
+      return 0.0;
+#endif
     };
 
     void Anemometr::iterateAlways()
     {
-      if (millis()- lastReadTime > 10000 )
+      if (millis() - lastReadTime > 10000)
       {
         lastReadTime = millis();
         channel.setNewValue(getValue());
@@ -144,9 +155,11 @@ namespace Supla
 
       pinMode(_pinAnem, INPUT_PULLUP);
       digitalWrite(_pinAnem, HIGH);
+#ifdef normalMode
       attachInterrupt(digitalPinToInterrupt(_pinAnem), serviceInterruptAnem, FALLING);
+#endif
       channel.setNewValue(getValue());
     }
 
   }; // namespace Sensor
-};   // namespace Supla
+}; // namespace Supla

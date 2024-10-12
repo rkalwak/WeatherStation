@@ -22,8 +22,8 @@ namespace Supla
 
     WindDirectionSensor::WindDirectionSensor(int pinDirection, int angleAdjustmentToNorth) : lastReadTime(0), lastSendTime(0) // constructor
     {
-      _pinDirection=pinDirection;
-      _angleAdjustmentToNorth=angleAdjustmentToNorth;
+      _pinDirection = pinDirection;
+      _angleAdjustmentToNorth = angleAdjustmentToNorth;
       channel.setType(SUPLA_CHANNELTYPE_THERMOMETER);
       channel.setDefault(SUPLA_CHANNELFNC_THERMOMETER);
       channel.setNewValue(0);
@@ -31,12 +31,13 @@ namespace Supla
 
     void WindDirectionSensor::iterateAlways()
     {
-      if ( millis() -lastReadTime > 1000 )
+#ifdef normalMode
+      if (millis() - lastReadTime > 1000)
       {
         lastReadTime = millis();
-        averageAngle.add(as5600.rawAngle() * AS5600_RAW_TO_DEGREES+_angleAdjustmentToNorth);
+        averageAngle.add(as5600.rawAngle() * AS5600_RAW_TO_DEGREES + _angleAdjustmentToNorth);
       }
-      if (millis() -lastSendTime > 10000)
+      if (millis() - lastSendTime > 10000)
       {
         lastSendTime = millis();
         channel.setNewValue(averageAngle.getAverage());
@@ -44,16 +45,19 @@ namespace Supla
         Serial.println(averageAngle.getAverage());
         averageAngle.reset();
       }
+#endif
     }
 
     void WindDirectionSensor::onInit()
     {
+#ifdef normalMode
       as5600.begin(_pinDirection);            //  set direction pin.
       as5600.setDirection(AS5600_CLOCK_WISE); // default, just be explicit.
+#endif
       channel.setNewValue(0);
       averageAngle = AverageAngle(AverageAngle::DEGREES);
       averageAngle.reset();
     }
 
   }; // namespace Sensor
-};   // namespace Supla
+}; // namespace Supla

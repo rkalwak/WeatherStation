@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#define normalMode 1
 #include <SuplaDevice.h>
 #include <supla/sensor/DS18B20.h>
 #include <Wire.h>
@@ -22,12 +23,14 @@
 #include <supla/network/html/wifi_parameters.h>
 #include <supla/network/html/protocol_parameters.h>
 #include <supla/device/supla_ca_cert.h>
+
 Supla::Clock suplaClock;
 Supla::Sensor::RainSensor *rainSensor;
 bool resetOncePerHour = true;
 
 Supla::ESPWifi wifi(wifiSSID, wifiPass);
 Supla::LittleFsConfig configSupla;
+long lastRead=0;
 
 void setup()
 {
@@ -73,14 +76,16 @@ void setup()
   auto spsPM04 = new Supla::Sensor::SPS30_PM04(sps30);
   auto spsPM10 = new Supla::Sensor::SPS30_PM10(sps30);
   
-  new Supla::Sensor::DS18B20(4);
+  uint8_t internalTemp[8] = { 0x28, 0x52, 0x29, 0xB5, 0x63, 0x20, 0x01, 0x9B }; // wewnatrz garazu
+  uint8_t externalTemp[8] = { 0x28, 0x1C, 0x7F, 0x57, 0x04, 0xE1, 0x3C, 0x56 }; // na zewnatrz
+  auto ds= new Supla::Sensor::DS18B20(4, internalTemp);
   new Supla::Sensor::HDC1080();  
   new Supla::Sensor::MS5611Sensor(248);
   rainSensor = new Supla::Sensor::RainSensor(2, 2.5, 300);
   new Supla::Sensor::WindDirectionSensor(18, 15);
 
-  new Supla::Sensor::Anemometr(15, 1, 1);
-
+  new Supla::Sensor::Anemometr(15, 1, 0);
+  auto ds2= new Supla::Sensor::DS18B20(4, externalTemp);
   // new Supla::Sensor::VoltageMeasurement(34);
   
   Wire.setClock(100000);
@@ -89,6 +94,8 @@ void setup()
   SuplaDevice.setSupla3rdPartyCACert(supla3rdCACert);
   SuplaDevice.begin();
   SuplaDevice.addClock(new Supla::Clock);
+  Serial.print("RRSI: ");
+  Serial.println(WiFi.RSSI());
 }
 
 void loop()
@@ -103,5 +110,12 @@ void loop()
   if (suplaClock.getMin() == 1)
   {
     resetOncePerHour = true;
+  }
+
+  if(millis()- lastRead > 10000)
+  {
+    Serial.print("RRSI: ");
+    Serial.println(WiFi.RSSI());
+    lastRead=millis();
   }
 }
